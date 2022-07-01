@@ -95,7 +95,7 @@ public class ShiroConfiguration {
         sessionManager.setSessionIdCookieEnabled(true);
         sessionManager.setSessionIdCookie(simpleCookie());
         //设置超时
-        sessionManager.setGlobalSessionTimeout(3600*10000);
+        sessionManager.setGlobalSessionTimeout(3600*1000);
         return sessionManager;
     }
     //创建 realm 对象( 步骤一

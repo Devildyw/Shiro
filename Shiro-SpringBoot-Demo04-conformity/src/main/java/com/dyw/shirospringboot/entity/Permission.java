@@ -3,6 +3,7 @@ package com.dyw.shirospringboot.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,8 +11,10 @@ import java.util.Date;
  * @since 2022-06-30-18:55
  */
 @Data
-@TableName(value = "permission",autoResultMap = true)
-public class Permission {
+@TableName(value = "permission", autoResultMap = true)
+public class Permission implements Serializable {
+    private static final long serialVersionUID = 1111111L;
+
     @TableId(type = IdType.AUTO)
     private Integer pId;
 

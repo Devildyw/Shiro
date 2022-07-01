@@ -1,5 +1,6 @@
 package com.dyw.shirospringboot.service.user.impl;
 
+import com.dyw.shirospringboot.entity.User;
 import com.dyw.shirospringboot.mapper.UserMapper;
 import com.dyw.shirospringboot.service.user.UserService;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> selectUserPermissionByUserName(String username) {
         return userMapper.findUserPermissionByUserName(username);
+    }
+
+    @Override
+    public User selectUserByUserName(String username) {
+        return userMapper.findUserByUserName(username);
     }
 }

@@ -34,10 +34,6 @@ public class RedisConfig {
 
     }
 
-
-
-
-
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();

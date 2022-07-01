@@ -14,6 +14,9 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select password from shiro.user where username = #{username} limit 1")
     String findUserPasswordByUserName(String username);
 
+    @Select("select * from shiro.user where username = #{username} limit 1")
+    User findUserByUserName(String username);
+
     @Select("select * from ((shiro.user inner join shiro.user_role on user.id = user_role.uid) inner join shiro.role on user_role.rid = r_id) where username = #{username}")
     List<String> findUserRolesByUserName(String username);
 

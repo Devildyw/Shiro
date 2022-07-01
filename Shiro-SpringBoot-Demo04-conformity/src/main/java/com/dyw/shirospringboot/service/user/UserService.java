@@ -1,5 +1,7 @@
 package com.dyw.shirospringboot.service.user;
 
+import com.dyw.shirospringboot.entity.User;
+
 import java.util.List;
 
 /**
@@ -23,8 +25,11 @@ public interface UserService {
 
     /**
      * 通过用户名查找到用户的权限信息列表
+     *
      * @param username 用户名
      * @return 权限信息列表
      */
     List<String> selectUserPermissionByUserName(String username);
+
+    User selectUserByUserName(String username);
 }
