@@ -3,7 +3,9 @@ package com.dyw.shirospringboot.handler;
 import com.dyw.shirospringboot.response.R;
 import com.dyw.shirospringboot.response.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -19,5 +21,13 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         e.printStackTrace();
         return R.fail(999, e.getMessage());
+    }
+
+    @ExceptionHandler(IncorrectCredentialsException.class)
+    @ResponseBody
+    public Result doHandleShiroException(IncorrectCredentialsException e){
+        log.error(e.getMessage());
+        e.printStackTrace();
+        return R.fail(998, "密码错误");
     }
 }

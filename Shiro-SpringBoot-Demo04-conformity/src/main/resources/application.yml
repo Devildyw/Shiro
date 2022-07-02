@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /shiro
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     url: jdbc:mysql://124.222.35.20:3319/shiro?useUnicode=true&characterEncoding=utf-8&useSSL=false
     password: dyw20020304

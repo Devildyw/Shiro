@@ -1,6 +1,11 @@
 package com.dyw.shirospringboot.config.shiro.config;
 
 import com.dyw.shirospringboot.config.shiro.cache.RedisCacheManager;
+import com.dyw.shirospringboot.config.shiro.filter.KickedOutAuthorizationFilter;
+import com.dyw.shirospringboot.config.shiro.filter.MyFormAuthenticationFilter;
+import com.dyw.shirospringboot.config.shiro.filter.MyPermissionsAuthorizationFilter;
+import com.dyw.shirospringboot.config.shiro.filter.MyRolesAuthorizationFilter;
+import com.dyw.shirospringboot.config.shiro.passwordMatcher.RetryLimitCredentialsMatcher;
 import com.dyw.shirospringboot.config.shiro.realm.UserRealm;
 import com.dyw.shirospringboot.config.shiro.session.RedisSessionDAO;
 import com.dyw.shirospringboot.config.shiro.session.ShiroSessionManager;
@@ -18,7 +23,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
+import javax.annotation.Resource;
+import javax.servlet.Filter;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Devil
@@ -29,12 +37,15 @@ public class ShiroConfiguration {
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        shiroFilterFactoryBean.setFilters(filters());
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
         HashMap<String, String> filters = new HashMap<>();
         filters.put("/login", "anon");
         filters.put("/register", "anon");
 
+
+        filters.put("/**","Kick-out");
         return shiroFilterFactoryBean;
     }
 
@@ -52,7 +63,7 @@ public class ShiroConfiguration {
     public UserRealm userRealm() {
         UserRealm userRealm = new UserRealm();
         //新建密码比较器 Shiro自带
-        HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
+        HashedCredentialsMatcher matcher = new RetryLimitCredentialsMatcher();
         //指定密码比较器的hash次数
 
         //指定密码比较器的算法名称 这里的所有参数都要与用户注册时密码的加密参数设置一致
@@ -73,7 +84,8 @@ public class ShiroConfiguration {
     @Bean
     public SimpleCookie simpleCookie() {
         SimpleCookie simpleCookie = new SimpleCookie();
-        simpleCookie.setName("ShiroSession");
+        simpleCookie.setName("Devildyw.Shiro");
+        simpleCookie.setMaxAge(3600 * 1000);
         return simpleCookie;
     }
 
@@ -93,8 +105,16 @@ public class ShiroConfiguration {
         return sessionManager;
     }
 
-    //todo:密码重试次数密码比较器
-
     //todo: 配置自定义拦截器 整合jwt后的重写的过滤器 控制同一时间同一用户在线人数过滤器
+    @Resource
+    KickedOutAuthorizationFilter kickedOutAuthorizationFilter;
 
+    public Map<String, Filter> filters(){
+        HashMap<String, Filter> map = new HashMap<>(16);
+        map.put("Kick-out",kickedOutAuthorizationFilter);
+        map.put("Design-Authc",new MyFormAuthenticationFilter());
+        map.put("Design-Perms",new MyPermissionsAuthorizationFilter());
+        map.put("Design-Roles",new MyRolesAuthorizationFilter());
+        return map;
+    }
 }

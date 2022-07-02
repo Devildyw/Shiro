@@ -69,7 +69,6 @@ public class JwtUtil {
     public static Claims verifyJwt(String token) {
         //获取加密密钥 以便解密
         SecretKey secretKey = generateSecretKey();
-
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
