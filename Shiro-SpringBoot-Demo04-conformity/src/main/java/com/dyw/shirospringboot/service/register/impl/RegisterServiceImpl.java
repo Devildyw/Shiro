@@ -1,7 +1,7 @@
 package com.dyw.shirospringboot.service.register.impl;
 
 import com.dyw.shirospringboot.DTO.register.RegisterDTO;
-import com.dyw.shirospringboot.entity.User;
+import com.dyw.shirospringboot.entity.shiro.User;
 import com.dyw.shirospringboot.mapper.UserMapper;
 import com.dyw.shirospringboot.response.R;
 import com.dyw.shirospringboot.response.Result;

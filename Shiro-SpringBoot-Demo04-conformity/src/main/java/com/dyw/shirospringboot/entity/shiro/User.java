@@ -1,4 +1,4 @@
-package com.dyw.shirospringboot.entity;
+package com.dyw.shirospringboot.entity.shiro;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;

@@ -12,21 +12,16 @@ import com.dyw.shirospringboot.config.shiro.session.ShiroSessionManager;
 import com.dyw.shirospringboot.utils.DigestsUtil;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.eis.MemorySessionDAO;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
-import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
-import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 import javax.annotation.Resource;
 import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Devil
@@ -34,23 +29,28 @@ import java.util.Map;
  */
 @Configuration
 public class ShiroConfiguration {
-    @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
+    @Bean("shiroFilterFactoryBean")
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(@Qualifier("securityManager") SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-        shiroFilterFactoryBean.setFilters(filters());
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
-        HashMap<String, String> filters = new HashMap<>();
+        shiroFilterFactoryBean.setFilters(filters());
+
+
+        Map<String, String> filters = new LinkedHashMap<>();
+        filters.put("/mail", "Design-Roles[123]");
         filters.put("/login", "anon");
+        filters.put("/logout","Design-Authc");
         filters.put("/register", "anon");
+        filters.put("/**", "kick-out");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filters);
+//        shiroFilterFactoryBean.setGlobalFilters(globalFilters());
 
-
-        filters.put("/**","Kick-out");
         return shiroFilterFactoryBean;
     }
 
 
-    @Bean
+    @Bean("securityManager")
     public DefaultWebSecurityManager getDefaultWebSecurityManager(UserRealm userRealm, ShiroSessionManager shiroSessionManager){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setSessionManager(shiroSessionManager);
@@ -105,16 +105,22 @@ public class ShiroConfiguration {
         return sessionManager;
     }
 
-    //todo: 配置自定义拦截器 整合jwt后的重写的过滤器 控制同一时间同一用户在线人数过滤器
+    // 配置自定义拦截器 整合jwt后的重写的过滤器 控制同一时间同一用户在线人数过滤器
     @Resource
     KickedOutAuthorizationFilter kickedOutAuthorizationFilter;
 
-    public Map<String, Filter> filters(){
+    public Map<String, Filter> filters() {
         HashMap<String, Filter> map = new HashMap<>(16);
-        map.put("Kick-out",kickedOutAuthorizationFilter);
-        map.put("Design-Authc",new MyFormAuthenticationFilter());
-        map.put("Design-Perms",new MyPermissionsAuthorizationFilter());
-        map.put("Design-Roles",new MyRolesAuthorizationFilter());
+        map.put("kick-out", kickedOutAuthorizationFilter);
+        map.put("Design-Authc", new MyFormAuthenticationFilter());
+        map.put("Design-Perms", new MyPermissionsAuthorizationFilter());
+        map.put("Design-Roles", new MyRolesAuthorizationFilter());
         return map;
+    }
+
+    public List<String> globalFilters() {
+        ArrayList<String> filters = new ArrayList<>();
+        filters.add("kick-out");
+        return filters;
     }
 }

@@ -9,6 +9,7 @@ import org.apache.shiro.session.mgt.DefaultSessionKey;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.apache.shiro.web.util.WebUtils;
 import org.redisson.api.RDeque;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.Serializable;
 
 /**
  * @author Devil
@@ -41,6 +41,7 @@ public class KickedOutAuthorizationFilter extends AccessControlFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        String jwtToken = WebUtils.toHttp(request).getHeader("token");
         Subject subject = getSubject(request, response);
 
         if (!subject.isAuthenticated()){

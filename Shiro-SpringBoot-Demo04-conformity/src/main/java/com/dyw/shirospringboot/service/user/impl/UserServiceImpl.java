@@ -1,6 +1,6 @@
 package com.dyw.shirospringboot.service.user.impl;
 
-import com.dyw.shirospringboot.entity.User;
+import com.dyw.shirospringboot.entity.shiro.User;
 import com.dyw.shirospringboot.mapper.UserMapper;
 import com.dyw.shirospringboot.service.user.UserService;
 import org.springframework.stereotype.Service;

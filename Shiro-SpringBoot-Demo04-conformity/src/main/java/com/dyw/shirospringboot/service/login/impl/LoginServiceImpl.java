@@ -1,22 +1,26 @@
 package com.dyw.shirospringboot.service.login.impl;
 
 import com.dyw.shirospringboot.DTO.login.LoginDTO;
-import com.dyw.shirospringboot.entity.User;
+import com.dyw.shirospringboot.config.shiro.session.RedisSessionDAO;
 import com.dyw.shirospringboot.response.R;
 import com.dyw.shirospringboot.response.Result;
 import com.dyw.shirospringboot.service.login.LoginService;
 import com.dyw.shirospringboot.service.user.UserService;
-import com.dyw.shirospringboot.utils.JwtUtil;
+import com.dyw.shirospringboot.utils.TokenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Devil
@@ -29,6 +33,15 @@ public class LoginServiceImpl implements LoginService {
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private RedissonClient redissonClient;
+
+    @Resource
+    private DefaultWebSessionManager defaultWebSessionManager;
+
+    @Resource
+    private RedisSessionDAO redisSessionDAO;
 
     @Override
     public Result login(LoginDTO loginDTO) {
@@ -55,14 +68,29 @@ public class LoginServiceImpl implements LoginService {
         subject.login(token);
         Session session = subject.getSession();
         String sessionId = (String) session.getId();
-        User user = userService.selectUserByUserName(username);
 
-        //构建jwt
-        String jwt = JwtUtil.generateJwt("system", user.getId(), sessionId, session.getTimeout());
+        String uToken = TokenUtils.createToken();
 
         HashMap<String, Object> map = new HashMap<>();
-
-        map.put("token", jwt);
+        redisTemplate.opsForValue().set("token:" + uToken, sessionId, session.getTimeout(), TimeUnit.MILLISECONDS);
+        map.put("token", uToken);
         return R.success(map);
+    }
+
+    /**
+     * 注销 清除redis中的缓存
+     * @param request
+     * @return
+     */
+    @Override
+    public Result logout(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        Subject subject = SecurityUtils.getSubject();
+        String username = (String) subject.getPrincipal();
+        Session session = subject.getSession();
+        redisTemplate.delete("token:"+token);
+        redisTemplate.delete("KickedOutAuthorization:" + username);
+        subject.logout();
+        return R.success(null);
     }
 }

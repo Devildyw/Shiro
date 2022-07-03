@@ -1,12 +1,12 @@
 package com.dyw.shirospringboot.config.shiro.session;
 
-import com.dyw.shirospringboot.utils.JwtUtil;
-import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.springframework.data.redis.core.RedisTemplate;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +22,9 @@ public class ShiroSessionManager extends DefaultWebSessionManager {
 
     private static final String REFERENCED_SESSION_ID_SOURCE = "Stateless request";
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
     public ShiroSessionManager() {
         super();
     }
@@ -36,12 +39,10 @@ public class ShiroSessionManager extends DefaultWebSessionManager {
         } else {
             //设置当前session的状态
             request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, REFERENCED_SESSION_ID_SOURCE);
-            Claims claims = JwtUtil.verifyJwt(token);
-            String sessionId = (String) claims.get("jti");
+            String sessionId = (String) redisTemplate.opsForValue().get("token:" + token);
             log.info("sessionId{}", sessionId);
             request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID, sessionId);
             request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_IS_VALID, Boolean.TRUE);
-
             return sessionId;
         }
     }

@@ -1,4 +1,4 @@
-package com.dyw.shirospringboot.entity;
+package com.dyw.shirospringboot.entity.shiro;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -11,14 +11,16 @@ import java.util.Date;
  * @since 2022-06-30-18:55
  */
 @Data
-@TableName(value = "permission", autoResultMap = true)
-public class Permission implements Serializable {
-    private static final long serialVersionUID = 1111111L;
+@TableName("role_permission")
+public class RolePermission implements Serializable {
+    private static final long serialVersionUID = 1111113L;
 
     @TableId(type = IdType.AUTO)
-    private Integer pId;
+    private Integer id;
 
-    private String pName;
+    private Integer rid;
+
+    private Integer pid;
 
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;

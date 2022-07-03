@@ -1,14 +1,13 @@
 package com.dyw.shirospringboot.config.shiro.realm;
 
 import com.dyw.shirospringboot.config.redis.MyByteSource;
-import com.dyw.shirospringboot.entity.User;
+import com.dyw.shirospringboot.entity.shiro.User;
 import com.dyw.shirospringboot.service.user.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -58,6 +57,7 @@ public class UserRealm extends AuthorizingRealm {
         if (user == null) {
             throw new UnknownAccountException("该账户不存在");
         }
+
         return new SimpleAuthenticationInfo(username, user.getPassword(), MyByteSource.Util.bytes(user.getSalt()), this.getName());
     }
 }

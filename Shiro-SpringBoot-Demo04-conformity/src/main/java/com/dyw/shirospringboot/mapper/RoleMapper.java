@@ -1,7 +1,7 @@
 package com.dyw.shirospringboot.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.dyw.shirospringboot.entity.Role;
+import com.dyw.shirospringboot.entity.shiro.Role;
 
 /**
  * @author Devil

@@ -27,13 +27,11 @@ public class RedisConfiguration {
 
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         JdkSerializationRedisSerializer jdkSerializationRedisSerializer = new JdkSerializationRedisSerializer();
-        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
 
         redisTemplate.setKeySerializer(stringRedisSerializer);              //键值序列化方式
         redisTemplate.setValueSerializer(jdkSerializationRedisSerializer);
         redisTemplate.setHashKeySerializer(stringRedisSerializer);          //绑定hash的序列化方式
         redisTemplate.setHashValueSerializer(jdkSerializationRedisSerializer);
-//		redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
 

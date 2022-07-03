@@ -1,7 +1,7 @@
 package com.dyw.shirospringboot.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.dyw.shirospringboot.entity.User;
+import com.dyw.shirospringboot.entity.shiro.User;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;

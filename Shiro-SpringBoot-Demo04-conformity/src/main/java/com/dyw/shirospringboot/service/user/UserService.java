@@ -1,6 +1,6 @@
 package com.dyw.shirospringboot.service.user;
 
-import com.dyw.shirospringboot.entity.User;
+import com.dyw.shirospringboot.entity.shiro.User;
 
 import java.util.List;
 
